@@ -35,12 +35,7 @@ public class FilmeController {
     @PostMapping
     public ResponseEntity<Filme> criar(@Valid @RequestBody Filme filme) {
         Filme filmeSalvo = filmeService.salvar(filme);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(filmeSalvo.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(filmeSalvo);
+        return ResponseEntity.ok(filmeSalvo);
     }
 
     @PutMapping("/{id}")
