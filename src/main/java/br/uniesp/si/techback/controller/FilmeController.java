@@ -19,8 +19,13 @@ public class FilmeController {
     private final FilmeService filmeService;
 
     @GetMapping
-    public List<Filme> listar() {
-        return filmeService.listar();
+    public ResponseEntity<List<Filme>> listar() {
+        List<Filme> list = filmeService.listar();
+
+        if(list.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
