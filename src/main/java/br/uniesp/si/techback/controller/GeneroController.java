@@ -1,17 +1,14 @@
 package br.uniesp.si.techback.controller;
 
-import br.uniesp.si.techback.model.Filme;
-import br.uniesp.si.techback.model.Genero;
-import br.uniesp.si.techback.model.dto.GeneroDTO;
-import br.uniesp.si.techback.service.FilmeService;
+import br.uniesp.si.techback.domain.dto.request.GeneroRequestDTO;
+import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
+import br.uniesp.si.techback.domain.model.Genero;
 import br.uniesp.si.techback.service.GeneroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -24,10 +21,6 @@ public class GeneroController {
     @GetMapping
     public ResponseEntity<List<Genero>> listar() {
         List<Genero> list = service.listar();
-
-        if(list.isEmpty()){
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.ok(list);
     }
 
@@ -36,23 +29,23 @@ public class GeneroController {
         try {
             return ResponseEntity.ok(service.buscarPorId(id));
         } catch (Exception e) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<Genero> criar(@Valid @RequestBody GeneroDTO dto) {
-        Genero generoSalvo = service.criar(dto);
-        return ResponseEntity.ok(generoSalvo);
+    public ResponseEntity<Genero> criar(@Valid @RequestBody GeneroRequestDTO dto) {
+        Genero generoSalvo = service.salvar(dto);
+        return ResponseEntity.status(201).body(generoSalvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Genero> atualizar(@PathVariable Long id, @Valid @RequestBody GeneroDTO dto) {
+    public ResponseEntity<Genero> atualizar(@PathVariable Long id, @Valid @RequestBody GeneroRequestDTO dto) {
         try {
             Genero generoAtualizado = service.atualizar(id, dto);
             return ResponseEntity.ok(generoAtualizado);
-        } catch (Exception e) {
-            return ResponseEntity.noContent().build();
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 

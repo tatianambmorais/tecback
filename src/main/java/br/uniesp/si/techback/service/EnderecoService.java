@@ -1,12 +1,11 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.domain.dto.request.EnderecoRequestDTO;
 import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
-import br.uniesp.si.techback.model.Endereco;
-import br.uniesp.si.techback.model.Plano;
-import br.uniesp.si.techback.model.dto.EnderecoDTO;
+import br.uniesp.si.techback.domain.model.Endereco;
 import br.uniesp.si.techback.repository.EnderecoRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +13,19 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class EnderecoService {
-    private EnderecoRepository enderecoRepository;
+    private EnderecoRepository repository;
 
+    public List<Endereco> listar() {
+        return repository.findAll();
+    }
 
-    // fazendo com builder e record
-    public Endereco criar(EnderecoDTO dto) {
+    public Endereco buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Endereço não encontrado com o ID: " + id));
+    }
+
+    @Transactional
+    public Endereco salvar(EnderecoRequestDTO dto) {
        Endereco novoEndereco = Endereco.builder()
                .logradouro(dto.logradouro())
                .cidade(dto.cidade())
@@ -26,25 +33,16 @@ public class EnderecoService {
                .estado(dto.estado())
                .cep(dto.cep())
                .build();
-        enderecoRepository.save(novoEndereco);
-        return novoEndereco;
-
-    }
-    public Endereco buscarPorId(Long id) {
-        Endereco endereco = enderecoRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException("Endereço não encontrado com o ID: " + id));
-        return endereco;
+        return repository.save(novoEndereco);
     }
 
-    public List<Endereco> listar() {
-        return enderecoRepository.findAll();
-    }
+    @Transactional
+    public Endereco atualizar(Long id, EnderecoRequestDTO dto) {
 
-    public void excluir(Long id) {
-        enderecoRepository.deleteById(id);
-    }
+        if (!repository.existsById(id)) {
+            throw new EntidadeNaoEncontradaException("Endereço não encontrado com o ID: " + id);
+        }
 
-    public Endereco atualizar(Long id, EnderecoDTO dto) {
-        Endereco endereco = enderecoRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException("Endereço não encontrado com o ID: " + id));
         Endereco enderecoEditado = Endereco.builder()
                 .id(id)
                 .logradouro(dto.logradouro())
@@ -54,8 +52,15 @@ public class EnderecoService {
                 .estado(dto.estado())
                 .cep(dto.cep())
                 .build();
-        enderecoRepository.save(enderecoEditado);
-        return enderecoEditado;
+        return repository.save(enderecoEditado);
+    }
+
+    @Transactional
+    public void excluir(Long id) {
+        if (!repository.existsById(id)) {
+            throw new EntidadeNaoEncontradaException("Endereço não encontrado com o ID: " + id);
+        }
+        repository.deleteById(id);
     }
 
 }

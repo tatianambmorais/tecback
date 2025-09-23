@@ -1,6 +1,6 @@
 package br.uniesp.si.techback.repository;
 
-import br.uniesp.si.techback.model.Favorito;
+import br.uniesp.si.techback.domain.model.Favorito;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

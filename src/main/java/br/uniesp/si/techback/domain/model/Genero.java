@@ -1,4 +1,4 @@
-package br.uniesp.si.techback.model;
+package br.uniesp.si.techback.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

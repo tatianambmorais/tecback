@@ -1,4 +1,4 @@
-package br.uniesp.si.techback.model.enums;
+package br.uniesp.si.techback.domain.enums;
 
 public enum TipoPlano {
     BRONZE,

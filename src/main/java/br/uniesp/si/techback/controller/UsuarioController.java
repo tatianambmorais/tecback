@@ -1,9 +1,9 @@
 package br.uniesp.si.techback.controller;
 
+import br.uniesp.si.techback.domain.dto.request.UsuarioRequestDTO;
+import br.uniesp.si.techback.domain.model.Usuario;
 import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
-import br.uniesp.si.techback.domain.model.Filme;
-import br.uniesp.si.techback.domain.dto.request.FilmeRequestDTO;
-import br.uniesp.si.techback.service.FilmeService;
+import br.uniesp.si.techback.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/filmes")
+@RequestMapping("/usuarios")
 @RequiredArgsConstructor
-public class FilmeController {
+public class UsuarioController {
 
-    private final FilmeService service;
+    private final UsuarioService service;
 
     @GetMapping
-    public ResponseEntity<List<Filme>> listar() {
-        List<Filme> list = service.listar();
+    public ResponseEntity<List<Usuario>> listar() {
+        List<Usuario> list = service.listar();
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Filme> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(service.buscarPorId(id));
         } catch (Exception e) {
@@ -34,16 +34,16 @@ public class FilmeController {
     }
 
     @PostMapping
-    public ResponseEntity<Filme> criar(@Valid @RequestBody FilmeRequestDTO dto) {
-        Filme filmeSalvo = service.salvar(dto);
-        return ResponseEntity.status(201).body(filmeSalvo);
+    public ResponseEntity<Usuario> criar(@Valid @RequestBody UsuarioRequestDTO dto) {
+        Usuario usuarioSalvo = service.salvar(dto);
+        return ResponseEntity.status(201).body(usuarioSalvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Filme> atualizar(@PathVariable Long id, @Valid @RequestBody FilmeRequestDTO dto) {
+    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO dto) {
         try {
-            Filme filmeAtualizado = service.atualizar(id, dto);
-            return ResponseEntity.ok(filmeAtualizado);
+            Usuario usuarioAtualizado = service.atualizar(id, dto);
+            return ResponseEntity.ok(usuarioAtualizado);
         } catch (EntidadeNaoEncontradaException e) {
             return ResponseEntity.notFound().build();
         }

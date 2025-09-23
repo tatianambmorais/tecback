@@ -1,11 +1,13 @@
-package br.uniesp.si.techback.model;
+package br.uniesp.si.techback.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,12 +28,14 @@ public class Filme {
     @Column(name = "data_lancamento")
     private LocalDate dataLancamento;
 
-    @Column(length = 50)
-    private String genero;
+    @ManyToOne
+    @JoinColumn(name = "genero_id")
+    private Genero genero;
 
     @Column(name = "duracao_minutos")
     private Integer duracaoMinutos;
 
     @Column(name = "classificacao_indicativa", length = 10)
     private String classificacaoIndicativa;
+
 }

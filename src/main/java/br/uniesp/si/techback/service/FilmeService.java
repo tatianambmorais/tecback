@@ -1,8 +1,11 @@
 package br.uniesp.si.techback.service;
 
 import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
-import br.uniesp.si.techback.model.Filme;
+import br.uniesp.si.techback.domain.model.Filme;
+import br.uniesp.si.techback.domain.model.Genero;
+import br.uniesp.si.techback.domain.dto.request.FilmeRequestDTO;
 import br.uniesp.si.techback.repository.FilmeRepository;
+import br.uniesp.si.techback.repository.GeneroRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,44 +16,61 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmeService {
 
-    private final FilmeRepository filmeRepository;
+    private final FilmeRepository repository;
+    private final GeneroRepository generoRepository;
 
     public List<Filme> listar() {
-        return filmeRepository.findAll();
+        return repository.findAll();
     }
 
     public Filme buscarPorId(Long id) {
-        return filmeRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Filme n o encontrado com o ID: " + id));
+        return repository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Filme não encontrado com o ID: " + id));
     }
 
     @Transactional
-    public Filme salvar(Filme filme) {
-        return filmeRepository.save(filme);
+    public Filme salvar(FilmeRequestDTO dto) {
+
+        Genero genero = generoRepository.findById(dto.generoId())
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Gênero não encontrado com ID: " + dto.generoId()));
+
+        Filme filme = Filme.builder()
+                .titulo(dto.titulo())
+                .genero(genero)
+                .sinopse(dto.sinopse())
+                .dataLancamento(dto.dataLancamento())
+                .duracaoMinutos(dto.duracaoMinutos())
+                .classificacaoIndicativa(dto.classificacaoIndicativa())
+                .build();
+        return repository.save(filme);
     }
 
     @Transactional
-    public Filme atualizar(Long id, Filme filme) {
-        // Verifica se o filme existe
-        if (!filmeRepository.existsById(id)) {
-            throw new EntidadeNaoEncontradaException("Filme n o encontrado com o ID: " + id);
+    public Filme atualizar(Long id, FilmeRequestDTO dto) {
+        Genero genero = generoRepository.findById(dto.generoId())
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Gênero não encontrado com ID: " + dto.generoId()));
+
+        if (!repository.existsById(id)) {
+            throw new EntidadeNaoEncontradaException("Filme não encontrado com o ID: " + id);
         }
 
-        // Atualiza o ID do filme para o valor recebido
-        filme.setId(id);
-
-        // Salva o filme atualizado
-        return filmeRepository.save(filme);
+       Filme filmeEditado = Filme.builder()
+               .id(id)
+               .titulo(dto.titulo())
+               .genero(genero)
+               .sinopse(dto.sinopse())
+               .dataLancamento(dto.dataLancamento())
+               .duracaoMinutos(dto.duracaoMinutos())
+               .classificacaoIndicativa(dto.classificacaoIndicativa())
+               .build();
+        return repository.save(filmeEditado);
     }
 
     @Transactional
     public void excluir(Long id) {
-        // Verifica se o filme existe
-        if (!filmeRepository.existsById(id)) {
-            throw new EntidadeNaoEncontradaException("Filme no encontrado com o ID: " + id);
+        if (!repository.existsById(id)) {
+            throw new EntidadeNaoEncontradaException("Filme não encontrado com o ID: " + id);
         }
-
-        // Exclui o filme
-        filmeRepository.deleteById(id);
+        repository.deleteById(id);
     }
 }

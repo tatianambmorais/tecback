@@ -1,15 +1,15 @@
 package br.uniesp.si.techback.service;
 
 import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
-import br.uniesp.si.techback.model.Favorito;
-import br.uniesp.si.techback.model.Filme;
+import br.uniesp.si.techback.domain.model.Favorito;
+import br.uniesp.si.techback.domain.model.Filme;
 import br.uniesp.si.techback.repository.FavoritoRepository;
 import br.uniesp.si.techback.repository.FilmeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FavoritoService {
@@ -21,7 +21,8 @@ public class FavoritoService {
         this.filmeRepository = filmeRepository;
     }
 
-    public Favorito adicionar(Long id) {
+    @Transactional
+    public Favorito salvar(Long id) {
         Filme filmeFavoritar = filmeRepository.findById(id).orElse(null);
         Favorito favorito = new Favorito();
         favorito.setFilme(filmeFavoritar);
@@ -29,6 +30,7 @@ public class FavoritoService {
         return favoritoRepository.save(favorito);
     }
 
+    @Transactional
     public void excluir(Long id) {
         Filme filmeDesfavoritar = filmeRepository.findById(id).orElse(null);
 
@@ -38,7 +40,7 @@ public class FavoritoService {
         Favorito favorito = favoritoRepository.findByFilmeId(filmeDesfavoritar.getId()).orElseThrow(() -> new EntidadeNaoEncontradaException("Filme favorito n o encontrado com o ID: " + id));
             favoritoRepository.delete(favorito);
     }
-
+    @Transactional
     public List<Favorito> listar(){
         return favoritoRepository.findAll();
     }

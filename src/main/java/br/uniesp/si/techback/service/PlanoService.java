@@ -1,40 +1,57 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.domain.dto.request.PlanoRequestDTO;
 import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
-import br.uniesp.si.techback.model.Favorito;
-import br.uniesp.si.techback.model.Filme;
-import br.uniesp.si.techback.model.Plano;
+import br.uniesp.si.techback.domain.model.Plano;
 import br.uniesp.si.techback.repository.PlanoRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @RequiredArgsConstructor
 public class PlanoService {
-    private final PlanoRepository planoRepository;
+    private final PlanoRepository repository;
 
 
-
-    public Plano criar(Plano plano) {
-        return planoRepository.save(plano);
+    public List<Plano> listar() {
+        return repository.findAll();
     }
 
     public Plano buscarPorId(Long id) {
-        Plano plano = planoRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException("Plano não encontrado com o ID: " + id));
-        return plano;
+        return repository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Plano não encontrado com o ID: " + id));
     }
 
-    public List<Plano> listar() {
-        return planoRepository.findAll();
+    @Transactional
+    public Plano salvar(PlanoRequestDTO dto) {
+        Plano novoPlano = Plano.builder()
+                .tipoPlano(dto.tipoPlano())
+                .preco(dto.preco())
+                .build();
+        return repository.save(novoPlano);
     }
 
+    @Transactional
+    public Plano atualizar(Long id, PlanoRequestDTO dto) {
+
+        if (!repository.existsById(id)) {
+            throw new EntidadeNaoEncontradaException("Plano não encontrado com o ID: " + id);
+        }
+        Plano planoEditado = Plano.builder()
+                .id(id)
+                .tipoPlano(dto.tipoPlano())
+                .preco(dto.preco())
+                .build();
+        return repository.save(planoEditado);
+    }
+
+
+    @Transactional
     public void excluir(Long id) {
-        planoRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
 

@@ -1,10 +1,9 @@
-package br.uniesp.si.techback.model;
+package br.uniesp.si.techback.domain.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 @Data
@@ -14,8 +13,10 @@ public class Favorito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "filme_id", nullable = false)
     private Filme filme;
+
 
     private LocalDateTime adicionadoEm;
 
