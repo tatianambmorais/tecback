@@ -15,5 +15,8 @@ public record UsuarioRequestDTO(
         String email,
 
         @NotNull(message = "Plano não pode ser nulo")
-        Long planoId
+        Long planoId,
+
+         @NotNull(message = "Endereço não pode ser nulo")
+        EnderecoRequestDTO endereco
 ) {}

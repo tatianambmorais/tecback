@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record EnderecoRequestDTO(
+        @NotNull
+        Long id,
+
         @NotBlank(message = "Logradouro não pode ser vazio")
         String logradouro,
 

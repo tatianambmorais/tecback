@@ -15,6 +15,10 @@ public class Usuario {
     private Long cpf;
     private String nome;
     private String email;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "plano_id")
     private Plano plano;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "endereco_id")
+    private Endereco endereco;
 }
