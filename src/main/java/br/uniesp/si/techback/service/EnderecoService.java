@@ -18,13 +18,13 @@ public class EnderecoService {
 
 
     // fazendo com builder e record
-    public Endereco criar(EnderecoDTO endereco) {
+    public Endereco criar(EnderecoDTO dto) {
        Endereco novoEndereco = Endereco.builder()
-               .logradouro(endereco.logradouro())
-               .cidade(endereco.cidade())
-               .bairro(endereco.bairro())
-               .estado(endereco.estado())
-               .cep(endereco.cep())
+               .logradouro(dto.logradouro())
+               .cidade(dto.cidade())
+               .bairro(dto.bairro())
+               .estado(dto.estado())
+               .cep(dto.cep())
                .build();
         enderecoRepository.save(novoEndereco);
         return novoEndereco;

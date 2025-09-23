@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 @Entity
 @Data
-@Table
+@Table(name = "favoritos")
 public class Favorito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

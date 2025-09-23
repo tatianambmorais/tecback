@@ -39,8 +39,8 @@ public class EnderecoController {
     }
 
     @PostMapping
-    public ResponseEntity<Endereco> criar(@Valid @RequestBody EnderecoDTO endereco) {
-        Endereco enderecoSalvo = enderecoService.criar(endereco);
+    public ResponseEntity<Endereco> criar(@Valid @RequestBody EnderecoDTO dto) {
+        Endereco enderecoSalvo = enderecoService.criar(dto);
         return ResponseEntity.ok(enderecoSalvo);
     }
 
