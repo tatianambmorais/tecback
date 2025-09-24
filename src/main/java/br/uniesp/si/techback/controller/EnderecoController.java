@@ -1,7 +1,7 @@
 package br.uniesp.si.techback.controller;
 
-import br.uniesp.si.techback.domain.dto.request.EnderecoRequestDTO;
-import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
+import br.uniesp.si.techback.domain.dto.EnderecoDTO;
+import br.uniesp.si.techback.exception.ResourceNotFoundException;
 import br.uniesp.si.techback.domain.model.Endereco;
 import br.uniesp.si.techback.service.EnderecoService;
 import jakarta.validation.Valid;
@@ -33,17 +33,17 @@ public class EnderecoController {
     }
 
     @PostMapping
-    public ResponseEntity<Endereco> criar(@Valid @RequestBody EnderecoRequestDTO dto) {
+    public ResponseEntity<Endereco> criar(@Valid @RequestBody EnderecoDTO dto) {
         Endereco enderecoSalvo = service.salvar(dto);
         return ResponseEntity.status(201).body(enderecoSalvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Endereco> atualizar(@PathVariable Long id, @Valid @RequestBody EnderecoRequestDTO dto) {
+    public ResponseEntity<Endereco> atualizar(@PathVariable Long id, @Valid @RequestBody EnderecoDTO dto) {
         try {
             Endereco filmeAtualizado = service.atualizar(id, dto);
             return ResponseEntity.ok(filmeAtualizado);
-        } catch (EntidadeNaoEncontradaException e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }

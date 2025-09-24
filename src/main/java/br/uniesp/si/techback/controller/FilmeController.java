@@ -1,8 +1,8 @@
 package br.uniesp.si.techback.controller;
 
-import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
+import br.uniesp.si.techback.exception.ResourceNotFoundException;
 import br.uniesp.si.techback.domain.model.Filme;
-import br.uniesp.si.techback.domain.dto.request.FilmeRequestDTO;
+import br.uniesp.si.techback.domain.dto.FilmeDTO;
 import br.uniesp.si.techback.service.FilmeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,17 +34,17 @@ public class FilmeController {
     }
 
     @PostMapping
-    public ResponseEntity<Filme> criar(@Valid @RequestBody FilmeRequestDTO dto) {
+    public ResponseEntity<Filme> criar(@Valid @RequestBody FilmeDTO dto) {
         Filme filmeSalvo = service.salvar(dto);
         return ResponseEntity.status(201).body(filmeSalvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Filme> atualizar(@PathVariable Long id, @Valid @RequestBody FilmeRequestDTO dto) {
+    public ResponseEntity<Filme> atualizar(@PathVariable Long id, @Valid @RequestBody FilmeDTO dto) {
         try {
             Filme filmeAtualizado = service.atualizar(id, dto);
             return ResponseEntity.ok(filmeAtualizado);
-        } catch (EntidadeNaoEncontradaException e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }

@@ -1,6 +1,6 @@
 package br.uniesp.si.techback.service;
 
-import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
+import br.uniesp.si.techback.exception.ResourceNotFoundException;
 import br.uniesp.si.techback.domain.model.Favorito;
 import br.uniesp.si.techback.domain.model.Filme;
 import br.uniesp.si.techback.repository.FavoritoRepository;
@@ -37,7 +37,7 @@ public class FavoritoService {
         if (filmeDesfavoritar == null || filmeDesfavoritar.getId() == null){
             throw new IllegalArgumentException("Favorito ou ID não pode ser nulo");
         }
-        Favorito favorito = favoritoRepository.findByFilmeId(filmeDesfavoritar.getId()).orElseThrow(() -> new EntidadeNaoEncontradaException("Filme favorito n o encontrado com o ID: " + id));
+        Favorito favorito = favoritoRepository.findByFilmeId(filmeDesfavoritar.getId()).orElseThrow(() -> new ResourceNotFoundException("Filme favorito n o encontrado com o ID: " + id));
             favoritoRepository.delete(favorito);
     }
     @Transactional

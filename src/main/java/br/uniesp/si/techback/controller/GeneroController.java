@@ -1,7 +1,7 @@
 package br.uniesp.si.techback.controller;
 
-import br.uniesp.si.techback.domain.dto.request.GeneroRequestDTO;
-import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
+import br.uniesp.si.techback.domain.dto.GeneroDTO;
+import br.uniesp.si.techback.exception.ResourceNotFoundException;
 import br.uniesp.si.techback.domain.model.Genero;
 import br.uniesp.si.techback.service.GeneroService;
 import jakarta.validation.Valid;
@@ -34,17 +34,17 @@ public class GeneroController {
     }
 
     @PostMapping
-    public ResponseEntity<Genero> criar(@Valid @RequestBody GeneroRequestDTO dto) {
+    public ResponseEntity<Genero> criar(@Valid @RequestBody GeneroDTO dto) {
         Genero generoSalvo = service.salvar(dto);
         return ResponseEntity.status(201).body(generoSalvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Genero> atualizar(@PathVariable Long id, @Valid @RequestBody GeneroRequestDTO dto) {
+    public ResponseEntity<Genero> atualizar(@PathVariable Long id, @Valid @RequestBody GeneroDTO dto) {
         try {
             Genero generoAtualizado = service.atualizar(id, dto);
             return ResponseEntity.ok(generoAtualizado);
-        } catch (EntidadeNaoEncontradaException e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }

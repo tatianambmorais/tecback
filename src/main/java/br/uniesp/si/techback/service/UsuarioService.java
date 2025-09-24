@@ -1,11 +1,11 @@
 package br.uniesp.si.techback.service;
 
-import br.uniesp.si.techback.domain.dto.request.UsuarioRequestDTO;
+import br.uniesp.si.techback.domain.dto.EnderecoDTO;
+import br.uniesp.si.techback.domain.dto.UsuarioDTO;
 import br.uniesp.si.techback.domain.model.Endereco;
 import br.uniesp.si.techback.domain.model.Plano;
 import br.uniesp.si.techback.domain.model.Usuario;
-import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
-import br.uniesp.si.techback.repository.EnderecoRepository;
+import br.uniesp.si.techback.exception.ResourceNotFoundException;
 import br.uniesp.si.techback.repository.PlanoRepository;
 import br.uniesp.si.techback.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -19,43 +19,27 @@ import java.util.List;
 public class UsuarioService {
     private UsuarioRepository repository;
     private PlanoRepository planoRepository;
-    private EnderecoRepository enderecoRepository;
 
-    public Usuario buscarPorId(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com o ID: " + id));
+    // com métodos toEntity e toDto
+
+    public UsuarioDTO buscarPorId(Long id) {
+        Usuario usuario = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+        return toDto(usuario);
     }
 
-    public List<Usuario> listar() {
-        return repository.findAll();
+    public List<UsuarioDTO> listar() {
+        return repository.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     @Transactional
-    public Usuario salvar(UsuarioRequestDTO dto) {
-        Plano plano = planoRepository.findById(dto.planoId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Plano não encontrado com ID: " + dto.planoId()));
-
-       Endereco endereco = Endereco.builder()
-               .logradouro(dto.endereco().logradouro())
-               .numero(dto.endereco().numero())
-               .cep(dto.endereco().cep())
-               .bairro(dto.endereco().bairro())
-               .cidade(dto.endereco().cidade())
-               .estado(dto.endereco().estado())
-               .build();
-
-        Usuario novoUsuario = Usuario.builder()
-                .cpf(dto.cpf())
-                .nome(dto.nome())
-                .email(dto.email())
-                .endereco(endereco)
-                .plano(plano)
-                .build();
-        repository.save(novoUsuario);
-
-        return novoUsuario;
+    public Usuario salvar(UsuarioDTO dto) {
+        Usuario novoUsuario = toEntity(dto);
+        return repository.save(novoUsuario);
     }
-
 
     @Transactional
     public void excluir(Long id) {
@@ -63,27 +47,59 @@ public class UsuarioService {
     }
 
     @Transactional
-    public Usuario atualizar(Long cpf, UsuarioRequestDTO dto) {
-        Usuario usuarioExistente = repository.findById(cpf)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com o ID: " + cpf));
+    public Usuario atualizar(Long cpf, UsuarioDTO dto) {
+        boolean usuarioExiste = repository.existsById(dto.getId());
 
-        Plano plano = planoRepository.findById(dto.planoId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Plano não encontrado com ID: " + dto.planoId()));
-
-        usuarioExistente.setNome(dto.nome());
-        usuarioExistente.setEmail(dto.email());
-        usuarioExistente.setPlano(plano);
-
-        if (usuarioExistente.getEndereco() != null) {
-            usuarioExistente.getEndereco().setLogradouro(dto.endereco().logradouro());
-            usuarioExistente.getEndereco().setNumero(dto.endereco().numero());
-            usuarioExistente.getEndereco().setBairro(dto.endereco().bairro());
-            usuarioExistente.getEndereco().setCidade(dto.endereco().cidade());
-            usuarioExistente.getEndereco().setEstado(dto.endereco().estado());
-            usuarioExistente.getEndereco().setCep(dto.endereco().cep());
+        if (!usuarioExiste) {
+            throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + dto.getId());
         }
+        Usuario usuarioAtualizado = toEntity(dto);
+        return repository.save(usuarioAtualizado);
+    }
 
-        return repository.save(usuarioExistente);
+    public Usuario toEntity(UsuarioDTO dto){
+        Plano plano = planoRepository.findById(dto.getPlanoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Plano não encontrado com ID: " + dto.getPlanoId()));
+
+
+        Endereco endereco = Endereco.builder()
+                .id(dto.getId())
+                .logradouro(dto.getEndereco().getLogradouro())
+                .numero(dto.getEndereco().getNumero())
+                .cep(dto.getEndereco().getCep())
+                .bairro(dto.getEndereco().getBairro())
+                .cidade(dto.getEndereco().getCidade())
+                .estado(dto.getEndereco().getEstado())
+                .build();
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.getNome());
+        usuario.setCpf(dto.getCpf());
+        usuario.setEndereco(endereco);
+        usuario.setEmail(dto.getEmail());
+        usuario.setPlano(plano);
+        return usuario;
+    }
+
+    public UsuarioDTO toDto(Usuario usuario) {
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setId(usuario.getCpf());
+        dto.setNome(usuario.getNome());
+        dto.setCpf(usuario.getCpf());
+        dto.setEmail(usuario.getEmail());
+        dto.setPlanoId(usuario.getPlano().getId());
+
+        EnderecoDTO enderecoDTO = new EnderecoDTO();
+        enderecoDTO.setId(usuario.getEndereco().getId());
+        enderecoDTO.setLogradouro(usuario.getEndereco().getLogradouro());
+        enderecoDTO.setNumero(usuario.getEndereco().getNumero());
+        enderecoDTO.setCep(usuario.getEndereco().getCep());
+        enderecoDTO.setBairro(usuario.getEndereco().getBairro());
+        enderecoDTO.setCidade(usuario.getEndereco().getCidade());
+        enderecoDTO.setEstado(usuario.getEndereco().getEstado());
+
+        dto.setEndereco(enderecoDTO);
+        return dto;
     }
 
 

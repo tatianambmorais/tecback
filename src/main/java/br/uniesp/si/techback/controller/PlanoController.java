@@ -1,8 +1,8 @@
 package br.uniesp.si.techback.controller;
 
-import br.uniesp.si.techback.domain.dto.request.PlanoRequestDTO;
+import br.uniesp.si.techback.domain.dto.PlanoDTO;
 import br.uniesp.si.techback.domain.model.Plano;
-import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
+import br.uniesp.si.techback.exception.ResourceNotFoundException;
 import br.uniesp.si.techback.service.PlanoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,13 @@ public class PlanoController {
     private final PlanoService service;
 
     @GetMapping
-    public ResponseEntity<List<Plano>> listar() {
-        List<Plano> list = service.listar();
+    public ResponseEntity<List<PlanoDTO>> listar() {
+        List<PlanoDTO> list = service.listar();
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Plano> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<PlanoDTO> buscarPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(service.buscarPorId(id));
         } catch (Exception e) {
@@ -33,17 +33,17 @@ public class PlanoController {
     }
 
     @PostMapping
-    public ResponseEntity<Plano> criar(@Valid @RequestBody PlanoRequestDTO dto) {
+    public ResponseEntity<Plano> criar(@Valid @RequestBody PlanoDTO dto) {
         Plano filmeSalvo = service.salvar(dto);
         return ResponseEntity.status(201).body(filmeSalvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Plano> atualizar(@PathVariable Long id, @Valid @RequestBody PlanoRequestDTO dto) {
+    public ResponseEntity<PlanoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PlanoDTO dto) {
         try {
-            Plano planoAtualizado = service.atualizar(id, dto);
+            PlanoDTO planoAtualizado = service.atualizar(id, dto);
             return ResponseEntity.ok(planoAtualizado);
-        } catch (EntidadeNaoEncontradaException e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }

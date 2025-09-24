@@ -1,11 +1,11 @@
-package br.uniesp.si.techback.domain.dto.request;
+package br.uniesp.si.techback.domain.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
-public record FilmeRequestDTO(
+public record FilmeDTO(
         @NotBlank(message = "Título não pode ser vazio")
         @Size(max = 100, message = "Título deve ter no máximo 100 caracteres")
         String titulo,

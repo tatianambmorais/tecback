@@ -1,8 +1,8 @@
 package br.uniesp.si.techback.service;
 
 
-import br.uniesp.si.techback.domain.dto.request.GeneroRequestDTO;
-import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
+import br.uniesp.si.techback.domain.dto.GeneroDTO;
+import br.uniesp.si.techback.exception.ResourceNotFoundException;
 import br.uniesp.si.techback.domain.model.Genero;
 import br.uniesp.si.techback.repository.GeneroRepository;
 import jakarta.transaction.Transactional;
@@ -14,11 +14,14 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class GeneroService {
+
+    // com builder
+
     private GeneroRepository repository;
 
     public Genero buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Gênero não encontrado com o ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Gênero não encontrado com o ID: " + id));
     }
 
     public List<Genero> listar() {
@@ -26,7 +29,7 @@ public class GeneroService {
     }
 
     @Transactional
-    public Genero salvar(GeneroRequestDTO dto) {
+    public Genero salvar(GeneroDTO dto) {
         Genero novoGenero = Genero.builder()
                 .descricao(dto.descricao())
                 .build();
@@ -35,10 +38,10 @@ public class GeneroService {
     }
 
     @Transactional
-    public Genero atualizar(Long id, GeneroRequestDTO dto) {
+    public Genero atualizar(Long id, GeneroDTO dto) {
 
         if (!repository.existsById(id)) {
-            throw new EntidadeNaoEncontradaException("Gênero não encontrado com o ID: " + id);
+            throw new ResourceNotFoundException("Gênero não encontrado com o ID: " + id);
         }
 
         Genero generoEditado = Genero.builder()
@@ -52,7 +55,7 @@ public class GeneroService {
     @Transactional
     public void excluir(Long id) {
         if (!repository.existsById(id)) {
-            throw new EntidadeNaoEncontradaException("Genero não encontrado com o ID: " + id);
+            throw new ResourceNotFoundException("Genero não encontrado com o ID: " + id);
         }
         repository.deleteById(id);
     }

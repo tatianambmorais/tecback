@@ -1,8 +1,8 @@
 package br.uniesp.si.techback.controller;
 
-import br.uniesp.si.techback.domain.dto.request.UsuarioRequestDTO;
+import br.uniesp.si.techback.domain.dto.UsuarioDTO;
 import br.uniesp.si.techback.domain.model.Usuario;
-import br.uniesp.si.techback.exception.EntidadeNaoEncontradaException;
+import br.uniesp.si.techback.exception.ResourceNotFoundException;
 import br.uniesp.si.techback.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,13 @@ public class UsuarioController {
     private final UsuarioService service;
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> listar() {
-        List<Usuario> list = service.listar();
+    public ResponseEntity<List<UsuarioDTO>> listar() {
+        List<UsuarioDTO> list = service.listar();
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(service.buscarPorId(id));
         } catch (Exception e) {
@@ -34,17 +34,17 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> criar(@Valid @RequestBody UsuarioRequestDTO dto) {
+    public ResponseEntity<Usuario> criar(@Valid @RequestBody UsuarioDTO dto) {
         Usuario usuarioSalvo = service.salvar(dto);
         return ResponseEntity.status(201).body(usuarioSalvo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO dto) {
+    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioDTO dto) {
         try {
             Usuario usuarioAtualizado = service.atualizar(id, dto);
             return ResponseEntity.ok(usuarioAtualizado);
-        } catch (EntidadeNaoEncontradaException e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
